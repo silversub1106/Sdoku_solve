@@ -6,17 +6,17 @@
 
 
 //매번 실행할때마다 입력하기 귀찮아서 임의로 하나 정해둔것 실제로 실행시 0으로 초기화
-int Sdoku[9][9] = 
+int Sdoku[9][9] =
 {
-	{5,3,0,0,7,0,0,0,0},
-	{6,0,0,1,9,5,0,0,0},
-	{0,9,8,0,0,0,0,6,0},
-	{8,0,0,0,6,0,0,0,3},
-	{4,0,0,8,0,3,0,0,1},
-	{7,0,0,0,2,0,0,0,6},
-	{0,6,0,0,0,0,2,8,0},
-	{0,0,0,4,1,9,0,0,5},
-	{0,0,0,0,8,0,0,7,9}
+	{7,0,2,0,4,8,0,0,0},
+	{0,8,5,0,0,0,7,0,0},
+	{0,0,0,0,0,2,6,0,3},
+	{0,0,0,6,0,1,4,0,2},
+	{1,0,8,2,0,0,0,0,7},
+	{9,0,0,7,0,0,8,0,0},
+	{0,0,0,0,0,3,0,4,1},
+	{8,3,0,0,9,0,0,7,0},
+	{0,9,0,4,2,0,0,3,0}
 };
 
 
@@ -58,9 +58,9 @@ void display(int Sdoku[][9])
 			{
 				printf("%d ", Sdoku[i][j]);
 			}
-			
 
-			
+
+
 			if ((j + 1) % 3 == 0)
 			{
 				printf("|");
@@ -71,7 +71,7 @@ void display(int Sdoku[][9])
 			printf("\n");
 			printf("---------------------");
 		}
-		
+
 		printf("\n");
 
 	}
@@ -118,7 +118,7 @@ void solve_sdoku2(int point_x, int point_y) //가로 판별
 			{
 				able_num = false;
 				printf("solve2에서 실패\n");
-				
+
 			}
 			if (able_num == false)
 			{
@@ -177,8 +177,8 @@ void solve_sdoku4(int point_x, int point_y) //3x3판별
 						{
 							continue;
 						}
-						
-;						able_num = false;
+
+						;						able_num = false;
 						printf("solve4에서 실패\n");
 						if (able_num == false)
 						{
@@ -188,7 +188,7 @@ void solve_sdoku4(int point_x, int point_y) //3x3판별
 				}
 			}
 
-			
+
 		}
 
 		else if (point_y < 6)
@@ -423,15 +423,16 @@ int main(void)
 	int save = 0;
 	int i = 0;
 	Sdoku[points[save].x][points[save].y] = 1;
+	fail_cnt = 0;
 	//이부분부터 밑에까지 함수로 또만들거임
-	while (save<4)
+	while (save < cnt && save >= 0)
 	{
 		printf("==================================\n");
 		printf("save = %d\n", save);
 		printf("Sdoku[%d][%d] = %d\n\n", points[save].x, points[save].y, Sdoku[points[save].x][points[save].y]);
-		
+
 		able_num = true;
-		
+
 
 		solve_sdoku2(points[save].x, points[save].y);
 
@@ -439,39 +440,77 @@ int main(void)
 		{
 			solve_sdoku3(points[save].x, points[save].y);
 		}
-		
+
 		if (able_num == true)
 		{
 			solve_sdoku4(points[save].x, points[save].y);
 		}
-		
+
 
 		if (able_num == true)//<- 이게 트루라는 것은 후보숫자로 가능하던거
 		{
-			save++;
-			printf("save = %d\n", save);
-			Sdoku[points[save].x][points[save].y] = 1;
-			printf("Sdoku[%d][%d] = %d\n\n", points[save].x, points[save].y,Sdoku[points[save].x][points[save].y]);
-			
-			//이제 판별다 끝나고 그 숫자가 가능하다고 되면
-			//save 를 이용하여 이부분에 다음 숫자에 대해 코딩하면 된다.
-			//근데 생각해보니 이게 그 코드였음;
+			display(Sdoku);
+
+			if (save == cnt - 1)
+			{
+				break;
+			}
+
+			else
+			{
+				save++;
+				printf("save = %d\n", save);
+				Sdoku[points[save].x][points[save].y] = 1;
+				printf("Sdoku[%d][%d] = %d\n\n", points[save].x, points[save].y, Sdoku[points[save].x][points[save].y]);
+			}
+
 		}
 
-		else if (able_num == false)
+		else if (able_num == false)  //실패할 경우 위에거가 실행안되고 여기로옴 
 		{
-			printf("save = %d\n", save);
-			Sdoku[points[save].x][points[save].y]++;
-			printf("Sdoku[%d][%d] = %d\n\n", points[save].x, points[save].y, Sdoku[points[save].x][points[save].y]);
+
+			if (Sdoku[points[save].x][points[save].y] == 9)
+			{
+				display(Sdoku);
+
+				Sdoku[points[save].x][points[save].y] = 0;
+				save--;
+
+				if (Sdoku[points[save].x][points[save].y] == 9)
+				{
+					Sdoku[points[save].x][points[save].y] = 0;
+					save--;
+					Sdoku[points[save].x][points[save].y]++;
+				}
+
+				else
+				{
+					Sdoku[points[save].x][points[save].y]++;
+				}
+
+			}
+
+			else
+			{
+				display(Sdoku);
+
+				printf("save = %d\n", save);
+				Sdoku[points[save].x][points[save].y]++;
+				printf("Sdoku[%d][%d] = %d\n\n", points[save].x, points[save].y, Sdoku[points[save].x][points[save].y]);
+			}
+
+
+
 		}
-		
+
 
 	}
 	//여기까지는 따로 뽑아서 함수로 만들어야 main이 깔끔함
-		
-	
 
-	
+
+	system("cls");
+	display(Sdoku);
+
 
 	return 0;
 }
